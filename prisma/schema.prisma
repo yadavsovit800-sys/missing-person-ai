@@ -1,0 +1,45 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model MissingPerson {
+  id             String         @id @default(uuid())
+  fullName       String
+  age            Int
+  gender         String
+  lastSeenLoc    String
+  lastSeenCoords String
+  dateMissing    DateTime
+  photoUrl       String
+  faceVector     String?
+  contactPhone   String
+  status         String         @default("ACTIVE")
+  createdAt      DateTime       @default(now())
+  Sightings      SightingReport[]
+}
+
+model SightingReport {
+  id              String        @id @default(uuid())
+  missingPersonId String?
+  missingPerson   MissingPerson? @relation(fields: [missingPersonId], references: [id])
+  location        String
+  sightingCoords  String
+  photoUrl        String?
+  matchConfidence Float?
+  reporterContact String
+  createdAt       DateTime      @default(now())
+}
+
+model AlertBroadcast {
+  id        String   @id @default(uuid())
+  caseId    String
+  radiusKm  Int
+  targetLoc String
+  sentCount Int      @default(0)
+  createdAt DateTime @default(now())
+}

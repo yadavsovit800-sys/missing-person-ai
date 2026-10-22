@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FindTrace AI - Missing Person Identification</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#0b0f19] text-gray-100 flex flex-col min-h-screen">
+
+  <!-- Amber Alert Banner -->
+  <div class="bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white text-xs font-semibold py-1.5 px-4 flex items-center justify-between shadow-lg">
+    <div class="flex items-center space-x-2 overflow-hidden">
+      <span class="animate-pulse bg-red-900 text-red-200 px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase">CRITICAL ALERT</span>
+      <marquee class="text-xs">EMERGENCY BROADCAST: Missing Person Alert in Metropolitan Area - Last seen near Central Station - Facial Match Engine Active</marquee>
+    </div>
+    <span class="text-[11px] opacity-80 whitespace-nowrap hidden sm:inline"><i class="fa-solid fa-satellite-dish mr-1"></i> Live Geo-Grid Online</span>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-gray-800 bg-[#0d1322]/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+          <i class="fa-solid fa-fingerprint text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-cyan-400 bg-clip-text text-transparent">FindTrace AI</h1>
+          <p class="text-[10px] text-cyan-400 font-mono tracking-wider">HACKATHON EDITION v2.4</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button onclick="switchTab('scan')" class="bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-400 px-3.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-camera text-sm"></i>
+          <span>AI Scan</span>
+        </button>
+        <button onclick="switchTab('register')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-medium transition shadow-lg shadow-blue-600/30">
+          + Report Missing
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- Top Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="glass-panel p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-gray-400 font-medium">Total Cases Registered</p>
+          <p id="stat-total" class="text-2xl font-extrabold text-white mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+      </div>
+
+      <div class="glass-panel p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-gray-400 font-medium">Active Missing</p>
+          <p id="stat-active" class="text-2xl font-extrabold text-amber-400 mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+      </div>
+
+      <div class="glass-panel p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-gray-400 font-medium">Reunited Families</p>
+          <p id="stat-reunited" class="text-2xl font-extrabold text-emerald-400 mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-people-roof"></i>
+        </div>
+      </div>
+
+      <div class="glass-panel p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-gray-400 font-medium">AI Facial Accuracy</p>
+          <p id="stat-accuracy" class="text-2xl font-extrabold text-cyan-400 mt-1">98.4%</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex space-x-2 border-b border-gray-800 pb-2 overflow-x-auto">
+      <button id="tab-btn-cases" onclick="switchTab('cases')" class="px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 whitespace-nowrap">
+        <i class="fa-solid fa-list mr-1.5"></i> Active Directory
+      </button>
+      <button id="tab-btn-scan" onclick="switchTab('scan')" class="px-4 py-2 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition whitespace-nowrap">
+        <i class="fa-solid fa-expand mr-1.5"></i> AI Facial Scanner
+      </button>
+      <button id="tab-btn-register" onclick="switchTab('register')" class="px-4 py-2 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition whitespace-nowrap">
+        <i class="fa-solid fa-user-plus mr-1.5"></i> Register Case
+      </button>
+      <button id="tab-btn-alert" onclick="switchTab('alert')" class="px-4 py-2 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition whitespace-nowrap">
+        <i class="fa-solid fa-tower-cell mr-1.5"></i> Geofenced Amber Broadcast
+      </button>
+    </div>
+
+    <!-- TAB 1: Active Directory with Filters -->
+    <section id="tab-cases" class="space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-sm font-semibold text-gray-300">Registered Missing Person Records</h2>
+        
+        <!-- Filter Buttons -->
+        <div class="flex items-center space-x-1.5 bg-slate-900/80 p-1 rounded-lg border border-gray-800">
+          <button id="filter-btn-ALL" onclick="setFilter('ALL')" class="px-3 py-1 rounded-md text-xs font-medium bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition">
+            All Cases
+          </button>
+          <button id="filter-btn-ACTIVE" onclick="setFilter('ACTIVE')" class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-amber-400 transition">
+            Active
+          </button>
+          <button id="filter-btn-FOUND" onclick="setFilter('FOUND')" class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-emerald-400 transition">
+            Found
+          </button>
+        </div>
+      </div>
+
+      <div id="cases-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- TAB 2: AI Scan -->
+    <section id="tab-scan" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-panel p-6 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-gray-200 flex items-center gap-2">
+              <i class="fa-solid fa-crosshairs text-cyan-400"></i> AI Match Engine
+            </h3>
+            <span class="text-[10px] bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded border border-cyan-800 font-mono">128-d Vector Embedding</span>
+          </div>
+
+          <div class="scanner-container border-2 border-dashed border-gray-700 bg-slate-900/50 h-72 flex flex-col items-center justify-center p-4 cursor-pointer hover:border-cyan-500 transition relative" onclick="triggerScanInput()">
+            <div class="scan-beam" id="scan-beam" style="display: none;"></div>
+            <canvas id="mesh-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+            <img id="scan-preview" src="" class="hidden max-h-full max-w-full object-contain rounded-lg z-0">
+            <div id="scan-placeholder" class="text-center space-y-2 z-10">
+              <div class="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <p class="text-xs font-medium text-gray-300">Drop suspect or found person photo here</p>
+              <p class="text-[10px] text-gray-500">Supports JPG, PNG, WEBP up to 10MB</p>
+            </div>
+            <input type="file" id="scan-file-input" class="hidden" accept="image/*" onchange="handleScanImageUpload(event)">
+          </div>
+
+          <button onclick="runAIMatch()" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold py-2.5 rounded-lg text-xs transition shadow-lg shadow-cyan-500/20 flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-brain"></i>
+            <span>Run Deep Facial Recognition Matching</span>
+          </button>
+        </div>
+
+        <div class="glass-panel p-6 space-y-4">
+          <h3 class="text-sm font-bold text-gray-200">Recognition Results</h3>
+
+          <div id="ai-idle-state" class="text-center py-16 text-gray-500 space-y-2">
+            <i class="fa-solid fa-robot text-4xl text-gray-700"></i>
+            <p class="text-xs">Upload an image and run search to process database face vectors.</p>
+          </div>
+
+          <div id="ai-results-state" class="hidden space-y-4">
+            <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-3 flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+                <div>
+                  <p class="text-xs font-bold text-emerald-200">High Confidence Candidate Identified</p>
+                  <p class="text-[10px] text-emerald-400/80">Biometric Similarity Vector Matched</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p id="match-confidence" class="text-xl font-extrabold text-emerald-400">96.8%</p>
+                <p class="text-[9px] text-gray-400 font-mono">SIMILARITY SCORE</p>
+              </div>
+            </div>
+
+            <div class="border border-gray-800 rounded-lg p-4 bg-slate-900/60 flex space-x-4">
+              <img id="match-img" src="" class="w-24 h-24 rounded-lg object-cover border border-gray-700">
+              <div class="space-y-1 text-xs">
+                <p id="match-name" class="font-bold text-sm text-white">--</p>
+                <p class="text-gray-400"><span class="text-gray-500">Age:</span> <span id="match-age">--</span></p>
+                <p class="text-gray-400"><span class="text-gray-500">Missing Location:</span> <span id="match-loc">--</span></p>
+                <p class="text-gray-400"><span class="text-gray-500">Contact:</span> <span id="match-contact" class="text-cyan-400">--</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Register Form -->
+    <section id="tab-register" class="hidden glass-panel p-6 max-w-2xl mx-auto space-y-4">
+      <h2 class="text-sm font-bold text-white border-b border-gray-800 pb-2">Register New Missing Person Case</h2>
+
+      <form id="register-form" onsubmit="submitCase(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] font-medium text-gray-400 mb-1">Full Name</label>
+            <input type="text" required id="reg-name" placeholder="e.g. John Doe" class="w-full bg-slate-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-gray-400 mb-1">Age</label>
+            <input type="number" required id="reg-age" placeholder="e.g. 24" class="w-full bg-slate-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] font-medium text-gray-400 mb-1">Gender</label>
+            <select id="reg-gender" class="w-full bg-slate-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-gray-400 mb-1">Last Seen Location</label>
+            <input type="text" required id="reg-loc" placeholder="City, Station or Landmark" class="w-full bg-slate-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] font-medium text-gray-400 mb-1">Emergency Contact Phone</label>
+            <input type="tel" required id="reg-phone" placeholder="+1 (555) 000-0000" class="w-full bg-slate-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-gray-400 mb-1">Upload Photo from Device</label>
+            <input type="file" id="reg-file" accept="image/*" class="w-full bg-slate-900 border border-gray-800 rounded-lg px-3 py-1.5 text-xs text-gray-300 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg text-xs transition shadow-lg shadow-blue-600/30">
+          Submit Official Missing Person Report
+        </button>
+      </form>
+    </section>
+
+    <!-- TAB 4: Alert Broadcast -->
+    <section id="tab-alert" class="hidden glass-panel p-6 max-w-2xl mx-auto space-y-6">
+      <div class="border-b border-gray-800 pb-3">
+        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-tower-cell text-red-500"></i> Geofenced Emergency Amber Broadcast Trigger
+        </h2>
+        <p class="text-xs text-gray-400 mt-1">Send immediate notification triggers to mobile devices in proximity of last seen location.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Geofence Location</label>
+          <input type="text" id="alert-loc" value="Metropolitan Core Station" class="w-full bg-slate-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-gray-400">Broadcast Radius</span>
+            <span id="radius-val" class="text-cyan-400 font-bold">15 km</span>
+          </div>
+          <input type="range" id="alert-radius" min="1" max="50" value="15" oninput="document.getElementById('radius-val').innerText = this.value + ' km'" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500">
+        </div>
+
+        <button onclick="triggerAmberAlert()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow-lg shadow-red-600/30 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-bullhorn"></i>
+          <span>Broadcast Emergency Radius Alert</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
